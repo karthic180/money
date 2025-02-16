@@ -1,33 +1,41 @@
-# Latest Quotes for Dow Jones and Nasdaq 100
-
 import requests
-from datetime import datetime
+from bs4 import BeautifulSoup
 
-def fetch_latest_quotes():
-    url_dow = "https://api.example.com/dowjones/latest"
-    url_nasdaq = "https://api.example.com/nasdaq100/latest"
-    
-    response_dow = requests.get(url_dow)
-    response_nasdaq = requests.get(url_nasdaq)
-    
-    if response_dow.status_code == 200 and response_nasdaq.status_code == 200:
-        dow_data = response_dow.json()
-        nasdaq_data = response_nasdaq.json()
+def fetch_stock_quote(url):
+    try:
+        # Send a GET request to fetch the page content
+        response = requests.get(url)
+        response.raise_for_status()  # Ensure we got a valid response
         
-        return dow_data, nasdaq_data
-    else:
-        return None, None
+        # Parse the HTML content using BeautifulSoup
+        soup = BeautifulSoup(response.text, 'html.parser')
+        
+        # Extract the stock price (the price is within a span with a certain class name)
+        price_tag = soup.find('fin-streamer', {'class': 'Fw(b) Fz(36px) Mb(-4px) D(ib)'})
+        
+        if price_tag:
+            return price_tag.text
+        else:
+            print(f"Error: Stock quote not found in the page.")
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching data: {e}")
+        return None
 
-def print_quotes():
-    dow, nasdaq = fetch_latest_quotes()
-    
-    if dow and nasdaq:
-        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print(f"Date and Time: {current_time}")
-        print(f"Dow Jones Latest Quote: {dow['quote']} (Time: {dow['time']})")
-        print(f"Nasdaq 100 Latest Quote: {nasdaq['quote']} (Time: {nasdaq['time']})")
-    else:
-        print("Failed to fetch quotes.")
+def get_stock_quotes():
+    # URLs for Dow Jones and NASDAQ
+    stock_urls = {
+        'Dow Jones': 'https://finance.yahoo.com/quote/^DJI',
+        'NASDAQ': 'https://finance.yahoo.com/quote/^IXIC'
+    }
+
+    # Loop through the stock indices
+    for index, url in stock_urls.items():
+        price = fetch_stock_quote(url)
+        if price:
+            print(f"{index} Current Price: {price}")
+        else:
+            print(f"Could not retrieve {index} price.")
 
 if __name__ == "__main__":
-    print_quotes()
+    get_stock_quotes()
