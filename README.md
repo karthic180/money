@@ -12,14 +12,10 @@ This is a simple Python-based script that fetches the current stock quotes for *
 ## How to Run
 
 ### 1. Clone the Repository or Download the Script
-You can clone the repository or download the Python script (`stock_quote_fetcher.py`).
+You can clone the repository or download the Python script
 
 ### 2. Run the Script
-Once the script is saved locally, open your terminal and navigate to the directory containing the script. Then, run the script with:
-
-```
-python stock_quote_fetcher.py
-```
+Once the script is saved locally, open your terminal and navigate to the directory containing the script. Then, run the script
 
 ### 3. View the Output
 The script will display the current stock prices for **Dow Jones** and **NASDAQ** in the terminal. If the data is fetched successfully, the output will look like this:
